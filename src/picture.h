@@ -1,7 +1,7 @@
 // opus-tools 0.1.10: picture.h
 
-#ifndef __OPUSPICTURE_H
-#define __OPUSPICTURE_H
+#ifndef __PICTURE_H
+#define __PICTURE_H
 
 #include <ogg/ogg.h>
 
@@ -52,4 +52,4 @@ char *parse_picture_specification(const char *spec,
   } \
   while(0);
 
-#endif /* __OPUSPICTURE_H */
+#endif /* __PICTURE_H */
