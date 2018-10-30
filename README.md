@@ -44,12 +44,13 @@ Documentation
 
     Options:
       -h, --help              print this help
-      -o, --output            write the modified tags to a file
+      -o, --output FILE       write the modified tags to a file
       -y, --overwrite         overwrite the output file if it already exists
+      -v, --verbose           verbose (debug) mode (for corrupt file and development)
       -d, --delete FIELD      delete all the fields of a specified type
       -a, --add FIELD=VALUE   add a field
       -s, --set FIELD=VALUE   delete then add a field
-      -p, --picture NAME      add cover (<64k in BASE64)
+      -p, --picture FILE      add cover
       -D, --delete-all        delete all the fields!
       -S, --set-all           read the fields from stdin
 

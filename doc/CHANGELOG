@@ -1,5 +1,10 @@
 opustags
 
+1.2.1 "fix pages"
+
+fixed metadata size > 64k
+write multiple pages (for cover)
+
 1.2.0 "hybrid"
 
 hybrid opustags/opus-tools
