@@ -1,4 +1,4 @@
-.TH OpusTags 1 "28 Oct 2018" "1.2.0" "User Manual"
+.TH OpusTags 1 "30 Oct 2018" "1.2.1" "User Manual"
 .SH NAME
 opustags \- Opus comment editor
 .SH SYNOPSIS
@@ -71,6 +71,9 @@ By default, \fBopustags\fP refuses to overwrite an already existent file. Use
 this option to allow that. Note that this doesn’t allow in-place edition, the
 output file needs to be different from the input file.
 .TP
+.B \-v, \-\-verbose
+Verbose (debug) mode (for corrupt file and development)
+.TP
 .B \-d, \-\-delete \fIFIELD\fP
 Delete all the tags whose field name is \fIFIELD\fP (they may be several, though
 usually there is only one of each type). You can use this option as many times
@@ -91,7 +94,7 @@ type. As deletion occurs before adding, \fB--set\fP won’t erase the tags
 added with \fB--add\fP.
 .TP
 .B \-p, \-\-picture \fIFILE\fP
-Add cover (<64k in BASE64)
+Add cover
 .TP
 .B \-D, \-\-delete-all
 Delete all the tags before adding any. When this option is specified, the
@@ -104,7 +107,24 @@ read from \fBstdin\fP. Each line must specify a \fIFIELD=VALUE\fP pair and be
 LF-terminated (except for the last line). Invalid lines are skipped and cause
 a warning to be issued. Blank lines are ignored. This mode could be useful for
 batch processing tags through an utility like \fBsed\fP.
+.SH EXAMPLE
+opustags source.opus > out.opustags
+.TP
+\- source.opus
+see opusenc of opus-tools
+.PP
+cat in.opustags | opustags -S -p cover -o out.opus source.opus
+.TP
+\- in.opustags
+< 256strings ,< 16383b
+.TP
+\- cover
+JPEG, PNG, GIF
+.TP
+\- source.opus
+see opusenc of opus-tools
 .SH SEE ALSO
+.BR opusenc (1),
 .BR vorbiscomment (1),
 .BR sed (1)
 .SH AUTHOR

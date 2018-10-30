@@ -141,7 +141,10 @@ int add_tags(opus_tags *tags, const char **tags_to_add, uint32_t count)
 void print_tags(opus_tags *tags)
 {
     if(tags->count == 0)
-        puts("#no tags");
+    {
+        puts("#no tags\n");
+        puts("# example: ARTIST=you song artist\n");
+    }
     int i;
     for(i = 0; i < tags->count; i++)
     {
@@ -181,10 +184,11 @@ const char *help =
     "  -o, --output FILE       write the modified tags to a file\n"
     "  -i, --in-place [SUFFIX] use a temporary file then replace the original file\n"
     "  -y, --overwrite         overwrite the output file if it already exists\n"
+    "  -v, --verbose           verbose (debug) mode (for corrupt file and development)\n"
     "  -d, --delete FIELD      delete all the fields of a specified type\n"
     "  -a, --add FIELD=VALUE   add a field\n"
     "  -s, --set FIELD=VALUE   delete then add a field\n"
-    "  -p, --picture FILE      add cover (<64k in BASE64)\n"
+    "  -p, --picture FILE      add cover\n"
     "  -D, --delete-all        delete all the fields!\n"
     "  -S, --set-all           read the fields from stdin\n";
 
@@ -193,6 +197,7 @@ struct option options[] = {
     {"output", required_argument, 0, 'o'},
     {"in-place", optional_argument, 0, 'i'},
     {"overwrite", no_argument, 0, 'y'},
+    {"verbose", no_argument, 0, 'v'},
     {"delete", required_argument, 0, 'd'},
     {"add", required_argument, 0, 'a'},
     {"set", required_argument, 0, 's'},
@@ -219,9 +224,10 @@ int main(int argc, char **argv)
     int delete_all = 0;
     int set_all = 0;
     int overwrite = 0;
+    int verbose = 0;
     int print_help = 0;
     int c;
-    while((c = getopt_long(argc, argv, "ho:i::yd:a:s:p:DS", options, NULL)) != -1)
+    while((c = getopt_long(argc, argv, "ho:i::yvd:a:s:p:DS", options, NULL)) != -1)
     {
         switch(c){
             case 'h':
@@ -235,6 +241,9 @@ int main(int argc, char **argv)
                 break;
             case 'y':
                 overwrite = 1;
+                break;
+            case 'v':
+                verbose = 1;
                 break;
             case 'd':
                 if(strchr(optarg, '=') != NULL){
@@ -404,7 +413,10 @@ int main(int argc, char **argv)
             if(write_page(&og, out) == -1)
             {
                 error = "write_page: fwrite error";
-                break;
+                if (!verbose)
+                {
+                    break;
+                }
             }
             continue;
         }
@@ -413,13 +425,19 @@ int main(int argc, char **argv)
             if(ogg_stream_init(&os, ogg_page_serialno(&og)) == -1)
             {
                 error = "ogg_stream_init: couldn't create a decoder";
-                break;
+                if (!verbose)
+                {
+                    break;
+                }
             }
             if(out){
                 if(ogg_stream_init(&enc, ogg_page_serialno(&og)) == -1)
                 {
                     error = "ogg_stream_init: couldn't create an encoder";
-                    break;
+                    if (!verbose)
+                    {
+                        break;
+                    }
                 }
             }
             packet_count = 0;
@@ -427,7 +445,9 @@ int main(int argc, char **argv)
         if(ogg_stream_pagein(&os, &og) == -1)
         {
             error = "ogg_stream_pagein: invalid page";
-            break;
+            {
+                break;
+            }
         }
         // Read all the packets.
         while(ogg_stream_packetout(&os, &op) == 1)
@@ -438,14 +458,20 @@ int main(int argc, char **argv)
                 if(strncmp((char*) op.packet, "OpusHead", 8) != 0)
                 {
                     error = "opustags: invalid identification header";
-                    break;
+                    if (!verbose)
+                    {
+                        break;
+                    }
                 }
             }
             else if(packet_count == 2){ // Comment header
                 if(parse_tags((char*) op.packet, op.bytes, &tags) == -1)
                 {
                     error = "opustags: invalid comment header";
-                    break;
+                    if (!verbose)
+                    {
+                        break;
+                    }
                 }
                 if(delete_all)
                     tags.count = 0;
@@ -517,7 +543,7 @@ int main(int argc, char **argv)
                     char *picture_meta = NULL;
                     int picture_meta_len = strlen(picture_tag) + strlen(picture_data) + 1;
                     picture_meta = malloc(picture_meta_len);
-                    if(picture_meta == NULL || picture_meta_len > ogg_buffer_size)
+                    if(picture_meta == NULL)
                     {
                         fprintf(stderr,"Bad picture size: %d\n", picture_meta_len);
                         free(picture_meta);
@@ -564,11 +590,13 @@ int main(int argc, char **argv)
             error = "ogg_stream_check: internal error (decoder)";
         // Write the page.
         if(out){
-            ogg_stream_flush(&enc, &og);
-            if(write_page(&og, out) == -1)
-                error = "write_page: fwrite error";
-            else if(ogg_stream_check(&enc) != 0)
-                error = "ogg_stream_check: internal error (encoder)";
+            while(ogg_stream_flush(&enc, &og))
+            {
+                if(write_page(&og, out) == -1)
+                    error = "write_page: fwrite error";
+                else if(ogg_stream_check(&enc) != 0)
+                    error = "ogg_stream_check: internal error (encoder)";
+            }
         }
         else if(packet_count >= 2) // Read-only mode
             break;

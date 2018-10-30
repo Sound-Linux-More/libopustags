@@ -2,6 +2,6 @@
 #define __OPUSTAGS_CONFIG_H
 
 #define PNAME "opustags"
-#define PVERSION "1.2.0"
+#define PVERSION "1.2.1"
 
 #endif /* __OPUSTAGS_CONFIG_H */
