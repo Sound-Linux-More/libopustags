@@ -1,5 +1,9 @@
 opustags
 
+1.2.2 "no limits"
+
+no limits for size opustags-file
+
 1.2.1 "fix pages"
 
 fixed metadata size > 64k

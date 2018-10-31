@@ -3,9 +3,6 @@ opustags
 
 View and edit Opus comments.
 
-**Please note this project is old and not actively maintained.**
-Maybe you should use something else.
-
 It was built because at the time nothing supported Opus, but now things have
 changed for the better.
 

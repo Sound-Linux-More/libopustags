@@ -142,8 +142,8 @@ void print_tags(opus_tags *tags)
 {
     if(tags->count == 0)
     {
-        puts("#no tags\n");
-        puts("# example: ARTIST=you song artist\n");
+        puts("#no tags");
+        puts("# example: ARTIST=you song artist");
     }
     int i;
     for(i = 0; i < tags->count; i++)
@@ -483,8 +483,10 @@ int main(int argc, char **argv)
                 }
                 char *raw_tags = NULL;
                 if(set_all){
-                    int raw_comment_size = 16383;
-                    raw_tags = malloc(raw_comment_size + 1);
+                    size_t block_size = 4096, raw_buffer_size = 0, raw_len = 0;
+                    int raw_count_max = 0;
+                    raw_buffer_size = block_size;
+                    raw_tags = malloc(raw_buffer_size);
                     if(raw_tags == NULL)
                     {
                         error = "malloc: not enough memory for buffering stdin";
@@ -492,12 +494,29 @@ int main(int argc, char **argv)
                         break;
                     }
                     else{
-                        int raw_count_max = 256;
+                        char ch;
+                        ch = getc(stdin);
+                        while (ch != EOF)
+                        {
+                            if (raw_len == raw_buffer_size)
+                            {
+                                raw_buffer_size += block_size;
+                                raw_tags = (char*)realloc(raw_tags, raw_buffer_size * sizeof(char));
+                                if(raw_tags == NULL)
+                                {
+                                    error = "realloc: not enough memory for buffering stdin";
+                                    free(raw_tags);
+                                    break;
+                                }
+                            }
+                            if (ch == EOF) ch = '\0';
+                            if (ch == '\n') raw_count_max++;
+                            raw_tags[raw_len] = ch;
+                            raw_len++;
+                            ch = getc(stdin);
+                        }
+                        raw_count_max++;
                         char *raw_comment[raw_count_max];
-                        size_t raw_len = fread(raw_tags, 1, raw_comment_size, stdin);
-                        if(raw_len == raw_comment_size)
-                            fputs("warning: truncating comment to 16 KiB\n", stderr);
-                        raw_tags[raw_len] = '\0';
                         uint32_t raw_count = 0;
                         size_t field_len = 0;
                         int caught_eq = 0;
