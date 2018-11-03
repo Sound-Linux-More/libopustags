@@ -1,35 +1,40 @@
 opustags
+https://github.com/zvezdochiot/opustags [fork](https://github.com/fmang/opustags)
 
-1.2.2 "no limits"
+1.2.3 "library" <zvezdochiot>
+
+library version for other projects
+
+1.2.2 "no limits" <zvezdochiot>
 
 no limits for size opustags-file
 
-1.2.1 "fix pages"
+1.2.1 "fix pages" <zvezdochiot>
 
 fixed metadata size > 64k
 write multiple pages (for cover)
 
-1.2.0 "hybrid"
+1.2.0 "hybrid" <zvezdochiot>
 
 hybrid opustags/opus-tools
 add picture option (add cover)
 
-1.1.3 "restruct"
+1.1.3 "restruct" <zvezdochiot>
 
 restruct for opus-tools
 add opuspicture
 
-1.1.2 "strip"
+1.1.2 "strip" <zvezdochiot>
 
 strip space, comment and blank lines in "file.opustags"
 add "sample_audiobook.opustags"
 
-1.1.1 "overlong"
+1.1.1 "overlong" <Aarni Koskela>
 
 Don't croak on overlong opustags
 Become macOS compatible
 
-1.1 "fix"
+1.1 "fix" <Frédéric Mangano-Tarumi>
 
 mention utf-8
 fix long options
@@ -38,6 +43,6 @@ delete all, set all
 read from stdin, write to stdout
 tags manipulation
 
-1.0 "first"
+1.0 "first" <Frédéric Mangano-Tarumi>
 
 init version

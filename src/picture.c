@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "picture.h"
+#include "opustags.h"
 
 static const char BASE64_TABLE[64]={
   'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
