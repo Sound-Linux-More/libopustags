@@ -1,0 +1,14 @@
+# opustags installed pkg-config file
+
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib/i386-linux-gnu
+includedir=${prefix}/include
+
+Name: opustags
+Description: Opus tags editor library
+Version: 1.2.3
+Requires.private: ogg >= 1.3
+Conflicts:
+Libs: -L${libdir} -lopustags
+Cflags: -I${includedir}/opus

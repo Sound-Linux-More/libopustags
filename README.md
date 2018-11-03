@@ -1,7 +1,7 @@
-opustags
+opustags [fork](https://github.com/fmang/opustags)
 ========
 
-View and edit Opus comments.
+Library and tool for view and edit Opus comments.
 
 It was built because at the time nothing supported Opus, but now things have
 changed for the better.
