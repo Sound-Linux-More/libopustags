@@ -41,7 +41,7 @@ static const char BASE64_TABLE[64]={
 
 /*Utility function for base64 encoding METADATA_BLOCK_PICTURE tags.
   Stores BASE64_LENGTH(len)+1 bytes in dst (including a terminating NUL).*/
-void base64_encode(char *dst, const char *src, int len){
+void opustags_base64_encode(char *dst, const char *src, int len){
   unsigned s0;
   unsigned s1;
   unsigned s2;
@@ -80,7 +80,7 @@ void base64_encode(char *dst, const char *src, int len){
 
 /*A version of strncasecmp() that is guaranteed to only ignore the case of
    ASCII characters.*/
-int oi_strncasecmp(const char *a, const char *b, int n){
+int opustags_oi_strncasecmp(const char *a, const char *b, int n){
   int i;
   for(i=0;i<n;i++){
     int aval;
@@ -102,16 +102,16 @@ int oi_strncasecmp(const char *a, const char *b, int n){
   return 0;
 }
 
-int is_jpeg(const unsigned char *buf, size_t length){
+int opustags_is_jpeg(const unsigned char *buf, size_t length){
   return length>=11&&memcmp(buf,"\xFF\xD8\xFF\xE0",4)==0
    &&(buf[4]<<8|buf[5])>=16&&memcmp(buf+6,"JFIF",5)==0;
 }
 
-int is_png(const unsigned char *buf, size_t length){
+int opustags_is_png(const unsigned char *buf, size_t length){
   return length>=8&&memcmp(buf,"\x89PNG\x0D\x0A\x1A\x0A",8)==0;
 }
 
-int is_gif(const unsigned char *buf, size_t length){
+int opustags_is_gif(const unsigned char *buf, size_t length){
   return length>=6
    &&(memcmp(buf,"GIF87a",6)==0||memcmp(buf,"GIF89a",6)==0);
 }
@@ -119,11 +119,11 @@ int is_gif(const unsigned char *buf, size_t length){
 /*Tries to extract the width, height, bits per pixel, and palette size of a
    PNG.
   On failure, simply leaves its outputs unmodified.*/
-void extract_png_params(const unsigned char *data, size_t data_length,
+void opustags_params_extract_png(const unsigned char *data, size_t data_length,
                         ogg_uint32_t *width, ogg_uint32_t *height,
                         ogg_uint32_t *depth, ogg_uint32_t *colors,
                         int *has_palette){
-  if(is_png(data,data_length)){
+  if(opustags_is_png(data,data_length)){
     size_t offs;
     offs=8;
     while(data_length-offs>=12){
@@ -163,11 +163,11 @@ void extract_png_params(const unsigned char *data, size_t data_length,
 /*Tries to extract the width, height, bits per pixel, and palette size of a
    GIF.
   On failure, simply leaves its outputs unmodified.*/
-void extract_gif_params(const unsigned char *data, size_t data_length,
+void opustags_params_extract_gif(const unsigned char *data, size_t data_length,
                         ogg_uint32_t *width, ogg_uint32_t *height,
                         ogg_uint32_t *depth, ogg_uint32_t *colors,
                         int *has_palette){
-  if(is_gif(data,data_length)&&data_length>=14){
+  if(opustags_is_gif(data,data_length)&&data_length>=14){
     *width=data[6]|data[7]<<8;
     *height=data[8]|data[9]<<8;
     /*libFLAC hard-codes the depth to 24.*/
@@ -181,11 +181,11 @@ void extract_gif_params(const unsigned char *data, size_t data_length,
 /*Tries to extract the width, height, bits per pixel, and palette size of a
    JPEG.
   On failure, simply leaves its outputs unmodified.*/
-void extract_jpeg_params(const unsigned char *data, size_t data_length,
+void opustags_params_extract_jpeg(const unsigned char *data, size_t data_length,
                          ogg_uint32_t *width, ogg_uint32_t *height,
                          ogg_uint32_t *depth, ogg_uint32_t *colors,
                          int *has_palette){
-  if(is_jpeg(data,data_length)){
+  if(opustags_is_jpeg(data,data_length)){
     size_t offs;
     offs=2;
     for(;;){
@@ -228,7 +228,7 @@ void extract_jpeg_params(const unsigned char *data, size_t data_length,
    have already been added, to ensure only one is allowed.
   Return: A Base64-encoded string suitable for use in a METADATA_BLOCK_PICTURE
    tag.*/
-char *parse_picture_specification(const char *spec,
+char *opustags_picture_specification_parse(const char *spec,
                                   const char **error_message,
                                   int *seen_file_icons){
   FILE          *picture_file;
@@ -393,15 +393,15 @@ char *parse_picture_specification(const char *spec,
     data_length=nbuf-data_offset;
     /*If there was no media type, try to extract it from the file data.*/
     if(mime_type_end==mime_type){
-      if(is_jpeg(buf+data_offset,data_length)){
+      if(opustags_is_jpeg(buf+data_offset,data_length)){
         mime_type="image/jpeg";
         mime_type_end=mime_type+10;
       }
-      else if(is_png(buf+data_offset,data_length)){
+      else if(opustags_is_png(buf+data_offset,data_length)){
         mime_type="image/png";
         mime_type_end=mime_type+9;
       }
-      else if(is_gif(buf+data_offset,data_length)){
+      else if(opustags_is_gif(buf+data_offset,data_length)){
         mime_type="image/gif";
         mime_type_end=mime_type+9;
       }
@@ -416,18 +416,18 @@ char *parse_picture_specification(const char *spec,
     file_width=file_height=file_depth=file_colors=0;
     has_palette=-1;
     if(mime_type_end-mime_type==9
-     &&oi_strncasecmp("image/png",mime_type,mime_type_end-mime_type)==0){
-      extract_png_params(buf+data_offset,data_length,
+     &&opustags_oi_strncasecmp("image/png",mime_type,mime_type_end-mime_type)==0){
+      opustags_params_extract_png(buf+data_offset,data_length,
        &file_width,&file_height,&file_depth,&file_colors,&has_palette);
     }
     else if(mime_type_end-mime_type==9
-     &&oi_strncasecmp("image/gif",mime_type,mime_type_end-mime_type)==0){
-      extract_gif_params(buf+data_offset,data_length,
+     &&opustags_oi_strncasecmp("image/gif",mime_type,mime_type_end-mime_type)==0){
+      opustags_params_extract_gif(buf+data_offset,data_length,
        &file_width,&file_height,&file_depth,&file_colors,&has_palette);
     }
     else if(mime_type_end-mime_type==10
-     &&oi_strncasecmp("image/jpeg",mime_type,mime_type_end-mime_type)==0){
-      extract_jpeg_params(buf+data_offset,data_length,
+     &&opustags_oi_strncasecmp("image/jpeg",mime_type,mime_type_end-mime_type)==0){
+      opustags_params_extract_jpeg(buf+data_offset,data_length,
        &file_width,&file_height,&file_depth,&file_colors,&has_palette);
     }
     if(!width)width=file_width;
@@ -452,7 +452,7 @@ char *parse_picture_specification(const char *spec,
   if(width==0||height==0||depth==0)width=height=depth=colors=0;
   if(picture_type==1&&(width!=32||height!=32
    ||mime_type_end-mime_type!=9
-   ||oi_strncasecmp("image/png",mime_type,mime_type_end-mime_type)!=0)){
+   ||opustags_oi_strncasecmp("image/png",mime_type,mime_type_end-mime_type)!=0)){
     free(buf);
     *error_message="pictures of type 1 MUST be 32x32 PNGs";
     return NULL;
@@ -484,7 +484,7 @@ char *parse_picture_specification(const char *spec,
   b64_length=BASE64_LENGTH(data_length);
   out=(char *)malloc(b64_length+1);
   if(out!=NULL){
-    base64_encode(out,(char *)buf+data_offset,data_length);
+    opustags_base64_encode(out,(char *)buf+data_offset,data_length);
     if(picture_type>=1&&picture_type<=2)*seen_file_icons|=picture_type;
   }
   free(buf);

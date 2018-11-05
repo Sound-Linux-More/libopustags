@@ -3,7 +3,7 @@
 #include <string.h>
 #include "opustags.h"
 
-int parse_tags(char *data, long len, opus_tags *tags)
+int opustags_tags_parse(char *data, long len, opustags_tags *tags)
 {
     long pos;
     if(len < 8+4+4)
@@ -48,7 +48,7 @@ int parse_tags(char *data, long len, opus_tags *tags)
     return 0;
 }
 
-int render_tags(opus_tags *tags, ogg_packet *op)
+int opustags_tags_render(opustags_tags *tags, ogg_packet *op)
 {
     // Note: op->packet must be manually freed.
     op->b_o_s = 0;
@@ -83,7 +83,7 @@ int render_tags(opus_tags *tags, ogg_packet *op)
     return 0;
 }
 
-int match_field(const char *comment, uint32_t len, const char *field)
+int opustags_tags_match_field(const char *comment, uint32_t len, const char *field)
 {
     size_t field_len;
     for(field_len = 0; field[field_len] != '\0' && field[field_len] != '='; field_len++);
@@ -97,12 +97,12 @@ int match_field(const char *comment, uint32_t len, const char *field)
 
 }
 
-void delete_tags(opus_tags *tags, const char *field)
+void opustags_tags_delete(opustags_tags *tags, const char *field)
 {
     uint32_t i;
     for(i = 0; i < tags->count; i++)
     {
-        if(match_field(tags->comment[i], tags->lengths[i], field))
+        if(opustags_tags_match_field(tags->comment[i], tags->lengths[i], field))
         {
             tags->count--;
             tags->lengths[i] = tags->lengths[tags->count];
@@ -112,7 +112,7 @@ void delete_tags(opus_tags *tags, const char *field)
     }
 }
 
-int add_tags(opus_tags *tags, const char **tags_to_add, uint32_t count)
+int opustags_tags_add(opustags_tags *tags, const char **tags_to_add, uint32_t count)
 {
     if(count == 0)
         return 0;
@@ -132,7 +132,7 @@ int add_tags(opus_tags *tags, const char **tags_to_add, uint32_t count)
     return 0;
 }
 
-void print_tags(opus_tags *tags)
+void opustags_tags_print(opustags_tags *tags)
 {
     if(tags->count == 0)
     {
@@ -147,7 +147,7 @@ void print_tags(opus_tags *tags)
     }
 }
 
-void free_tags(opus_tags *tags)
+void opustags_tags_free(opustags_tags *tags)
 {
     if(tags->count > 0)
     {
@@ -156,7 +156,7 @@ void free_tags(opus_tags *tags)
     }
 }
 
-int write_page(ogg_page *og, FILE *stream)
+int opustags_write_page(ogg_page *og, FILE *stream)
 {
     if(fwrite(og->header, 1, og->header_len, stream) < og->header_len)
         return -1;

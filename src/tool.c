@@ -5,15 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "config.h"
 #include "opustags.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
 
-const char *version = PNAME " version " PVERSION "\nhttps://github.com/zvezdochiot/opustags [fork](https://github.com/fmang/opustags)\n";
+const char *version = PACKAGE_NAME " version " PACKAGE_VERSION "\n" PACKAGE_URL " [fork](https://github.com/fmang/opustags)\n";
 
 const char *usage =
-    "Usage: " PNAME " --help\n"
-    "       " PNAME " [OPTIONS] FILE\n"
-    "       " PNAME " OPTIONS FILE -o FILE\n";
+    "Usage: " PACKAGE_NAME " --help\n"
+    "       " PACKAGE_NAME " [OPTIONS] FILE\n"
+    "       " PACKAGE_NAME " OPTIONS FILE -o FILE\n";
 
 const char *help =
     "Options:\n"
@@ -206,7 +208,7 @@ int main(int argc, char **argv)
     if(path_picture != NULL)
     {
         int seen_file_icons=0;
-        picture_data = parse_picture_specification(path_picture, &error_message, &seen_file_icons);
+        picture_data = opustags_picture_specification_parse(path_picture, &error_message, &seen_file_icons);
         if(picture_data == NULL)
         {
             fprintf(stderr,"Not read picture: %s\n", error_message);
@@ -216,7 +218,7 @@ int main(int argc, char **argv)
     ogg_stream_state os, enc;
     ogg_page og;
     ogg_packet op;
-    opus_tags tags;
+    opustags_tags tags;
     ogg_sync_init(&oy);
     int ogg_buffer_size = 65536;
     char *buf;
@@ -248,9 +250,9 @@ int main(int argc, char **argv)
         // Short-circuit when the relevant packets have been read.
         if(packet_count >= 2 && out)
         {
-            if(write_page(&og, out) == -1)
+            if(opustags_write_page(&og, out) == -1)
             {
-                error = "write_page: fwrite error";
+                error = "opustags_write_page: fwrite error";
                 if (!verbose)
                 {
                     break;
@@ -303,7 +305,7 @@ int main(int argc, char **argv)
                 }
             }
             else if(packet_count == 2){ // Comment header
-                if(parse_tags((char*) op.packet, op.bytes, &tags) == -1)
+                if(opustags_tags_parse((char*) op.packet, op.bytes, &tags) == -1)
                 {
                     error = "opustags: invalid comment header";
                     if (!verbose)
@@ -317,7 +319,7 @@ int main(int argc, char **argv)
                 {
                     int i;
                     for(i=0; i<count_delete; i++)
-                        delete_tags(&tags, to_delete[i]);
+                        opustags_tags_delete(&tags, to_delete[i]);
                 }
                 char *raw_tags = NULL;
                 if(set_all){
@@ -390,10 +392,10 @@ int main(int argc, char **argv)
                                 field_len++;
                            }
                         }
-                        add_tags(&tags, (const char**) raw_comment, raw_count);
+                        opustags_tags_add(&tags, (const char**) raw_comment, raw_count);
                     }
                 }
-                add_tags(&tags, to_add, count_add);
+                opustags_tags_add(&tags, to_add, count_add);
                 if(picture_data != NULL)
                 {
                     char *picture_tag = "METADATA_BLOCK_PICTURE";
@@ -405,26 +407,26 @@ int main(int argc, char **argv)
                         fprintf(stderr,"Bad picture size: %d\n", picture_meta_len);
                         free(picture_meta);
                     } else {
-                        delete_tags(&tags, picture_tag);
+                        opustags_tags_delete(&tags, picture_tag);
                         strcpy(picture_meta, picture_tag);
                         strcat(picture_meta, "=");
                         strcat(picture_meta, picture_data);
                         strcat(picture_meta, "\0");
                         to_picture[0] = picture_meta;
-                        add_tags(&tags, to_picture, 1);
+                        opustags_tags_add(&tags, to_picture, 1);
                     }
                 }
                 if(out)
                 {
                     ogg_packet packet;
-                    render_tags(&tags, &packet);
+                    opustags_tags_render(&tags, &packet);
                     if(ogg_stream_packetin(&enc, &packet) == -1)
                         error = "ogg_stream_packetin: internal error";
                     free(packet.packet);
                 }
                 else
-                    print_tags(&tags);
-                free_tags(&tags);
+                    opustags_tags_print(&tags);
+                opustags_tags_free(&tags);
                 if(raw_tags)
                     free(raw_tags);
                 if(error || !out)
@@ -449,8 +451,8 @@ int main(int argc, char **argv)
         if(out){
             while(ogg_stream_flush(&enc, &og))
             {
-                if(write_page(&og, out) == -1)
-                    error = "write_page: fwrite error";
+                if(opustags_write_page(&og, out) == -1)
+                    error = "opustags_write_page: fwrite error";
                 else if(ogg_stream_check(&enc) != 0)
                     error = "ogg_stream_check: internal error (encoder)";
             }

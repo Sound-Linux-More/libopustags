@@ -29,8 +29,10 @@ Requirements
 Installing
 ----------
 
+    ./autogen.sh
+    ./configure --prefix=/usr/local
     make
-    make DESTDIR=/usr/local install
+    sudo make install
 
 Documentation
 -------------

@@ -1,6 +1,11 @@
 opustags
 https://github.com/zvezdochiot/opustags [fork](https://github.com/fmang/opustags)
 
+1.3.0 "configure" <zvezdochiot>
+
+"./autogen.sh" -> "./configure" -> "make"
+functions renamed to match libopus
+
 1.2.3 "library" <zvezdochiot>
 
 library version for other projects

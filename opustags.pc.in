@@ -1,0 +1,15 @@
+# library opustags installed pkg-config file
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE_NAME@
+Description: Opus tags editor library
+URL: @PACKAGE_URL@
+Version: @PACKAGE_VERSION@
+Requires.private: ogg >= 1.3
+Conflicts:
+Libs: -L${libdir} -l@PACKAGE_NAME@
+Cflags: -I${includedir}/opus

@@ -1,4 +1,0 @@
-#!/bin/sh
-
-[ -f opustags ] && LD_LIBRARY_PATH=. ./opustags "$@"
-
