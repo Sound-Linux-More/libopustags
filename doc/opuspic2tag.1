@@ -1,0 +1,33 @@
+.TH OpusPic2Tag 1 "7 Mar 2019" "1.3.1" "User Manual"
+.SH NAME
+opuspic2tag \- Convert picture to opus tag
+.SH SYNOPSIS
+.B opustags
+.RI [ OPTIONS ]
+.I INPUT
+.SH DESCRIPTION
+.PP
+\fBopuspic2tag\fP is part \fBopustags\fP for edit the comment header of an Opus file.
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Display a brief description of the options.
+.TP
+.B \-o, \-\-output \fIFILE\fI
+Output text file.
+.SH EXAMPLE
+opuspic2tag cover > cover.opustags
+.PP
+opuspic2tag -o cover.opustags cover
+.PP
+opuspic2tag cover >> file.opustags
+.TP
+\- cover
+JPEG, PNG, GIF
+.SH SEE ALSO
+.BR opustags (1),
+.BR opusenc (1),
+.BR vorbiscomment (1),
+.BR sed (1)
+.SH AUTHOR
+Frédéric Mangano <fmang@mg0.fr>

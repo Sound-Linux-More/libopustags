@@ -18,12 +18,15 @@ libopustags_la_LIBADD = $(DEPS_LIBS)
 libopustags_la_LDFLAGS = -no-undefined \
  -version-info @OP_LT_CURRENT@:@OP_LT_REVISION@:@OP_LT_AGE@
 
-bin_PROGRAMS = opustags
+bin_PROGRAMS = opustags opuspic2tag
 
-opustags_SOURCES = src/tool.c
+opustags_SOURCES = src/clitags.c
 opustags_LDADD = libopustags.la
 
-dist_man_MANS = doc/opustags.1
+opuspic2tag_SOURCES = src/clipic.c
+opuspic2tag_LDADD = libopustags.la
+
+dist_man_MANS = doc/opustags.1 doc/opuspic2tag.1
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = opustags.pc
