@@ -21,7 +21,7 @@ libopustags_la_LDFLAGS = -no-undefined \
 bin_PROGRAMS = opustags opuspic2tag
 
 opustags_SOURCES = src/clitags.c
-opustags_LDADD = libopustags.la
+opustags_LDADD = libopustags.la $(DEPS_LIBS)
 
 opuspic2tag_SOURCES = src/clipic.c
 opuspic2tag_LDADD = libopustags.la

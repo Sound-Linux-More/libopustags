@@ -1,3 +1,9 @@
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Sound-Linux-More/opustags)
+![GitHub Release Date](https://img.shields.io/github/release-date/Sound-Linux-More/opustags)
+![GitHub repo size](https://img.shields.io/github/repo-size/Sound-Linux-More/opustags)
+![GitHub all releases](https://img.shields.io/github/downloads/Sound-Linux-More/opustags/total)
+![GitHub](https://img.shields.io/github/license/Sound-Linux-More/opustags)
+
 opustags [fork](https://github.com/fmang/opustags)
 ========
 
