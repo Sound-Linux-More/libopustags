@@ -54,11 +54,12 @@ int main(int argc, char **argv)
         fputs(usage, stdout);
         return EXIT_SUCCESS;
     }
-    char *path_in, *path_out = NULL, *inplace = NULL, *path_picture = NULL, *picture_data = NULL;
+    char *path_in, *path_out = NULL, *inplace = NULL, *path_picture = NULL, *picture_desc = NULL, *picture_data = NULL;
     const char* to_add[argc];
     const char* to_delete[argc];
     const char* to_picture[1];
     const char *error_message;
+    unsigned long picture_type = 3;
     int count_add = 0, count_delete = 0;
     int delete_all = 0;
     int set_all = 0;
@@ -208,7 +209,7 @@ int main(int argc, char **argv)
     if(path_picture != NULL)
     {
         int seen_file_icons=0;
-        picture_data = opustags_picture_specification_parse(path_picture, &error_message, &seen_file_icons);
+        picture_data = opustags_picture_specification_parse(path_picture, &error_message, picture_desc, picture_type, &seen_file_icons);
         if(picture_data == NULL)
         {
             fprintf(stderr,"Not read picture: %s\n", error_message);

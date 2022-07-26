@@ -230,9 +230,11 @@ void opustags_params_extract_jpeg(const unsigned char *data, size_t data_length,
    tag.*/
 char *opustags_picture_specification_parse(const char *spec,
                                   const char **error_message,
-                                  int *seen_file_icons){
+                                  const char *desc,
+                                  unsigned long picture_type,
+                                  int *seen_file_icons)
+{
   FILE          *picture_file;
-  unsigned long  picture_type;
   unsigned long  width;
   unsigned long  height;
   unsigned long  depth;
@@ -254,11 +256,11 @@ char *opustags_picture_specification_parse(const char *spec,
      full specification just from the spec string.
     Instead, try to open the file.
     If it exists, the user probably meant the file.*/
-  picture_type=3;
   width=height=depth=colors=0;
   mime_type=mime_type_end=description=description_end=filename=spec;
   is_url=0;
   picture_file=fopen(filename,"rb");
+  if (desc != NULL) description = desc;
   if(picture_file==NULL&&strchr(spec,'|')){
     const char *p;
     char       *q;

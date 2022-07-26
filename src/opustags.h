@@ -66,6 +66,8 @@ void opustags_params_extract_jpeg(const unsigned char *data, size_t data_length,
 
 char *opustags_picture_specification_parse(const char *spec,
                                   const char **error_message,
+                                  const char *desc,
+                                  unsigned long picture_type,
                                   int *seen_file_icons);
 
 #define READ_U32_BE(buf) \
